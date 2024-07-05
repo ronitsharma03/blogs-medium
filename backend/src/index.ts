@@ -2,8 +2,9 @@ import { Hono } from "hono";
 // Since here nodejs runtime is not being used so the prisma client is imported from the edge
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { decode, sign, verify } from "hono/jwt";
+import { sign } from "hono/jwt";
 import { verifyPassword, hashPassword } from "./webCrypto";
+import authMiddleware from "./middleware";
 
 const app = new Hono<{
   Bindings: {
@@ -106,7 +107,7 @@ app.post("/api/v1/user/signin", async (c) => {
     
     c.status(403);
     return c.json({
-      message: "Erro while logging!"
+      message: "Error while logging!"
     });
   }
 });
@@ -123,8 +124,8 @@ app.get("/api/v1/blog/:id", (c) => {
   return c.text("Blog with id Get route");
 });
 
-app.get("/api/v1/blog/bulk", (c) => {
-  return c.text("Bulk blog get route");
+app.get("/api/v1/allblogs", authMiddleware, (c) => {
+  return c.text("All blog get route");
 });
 
 export default app;
