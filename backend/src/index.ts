@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { decode, sign, verify } from "hono/jwt";
+import { verifyPassword, hashPassword } from "./webCrypto";
 
 const app = new Hono<{
   Bindings: {
@@ -25,20 +26,23 @@ app.post("/api/v1/user/signup", async (c) => {
   const { email, password, name } = await c.req.json();
 
   try {
-    const existingUser = await prisma.user.findFirst({
+    const existingUser = await prisma.user.findUnique({
       where: {
-        email: email,
+        email: email
       },
     });
 
     if (existingUser) {
-      return c.text("User already exist");
+      return c.json({
+        message: "Email already exist"
+      });
     }
 
+    const hashedPassword = await hashPassword(password);
     const newUser = await prisma.user.create({
       data: {
         email: email,
-        password: password,
+        password: hashedPassword,
         name: name,
       },
     });
@@ -61,11 +65,12 @@ app.post("/api/v1/user/signup", async (c) => {
 
 app.post("/api/v1/user/signin", async (c) => {
   const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
+    datasourceUrl: c.env .DATABASE_URL,
   }).$extends(withAccelerate());
 
   try{
     const {email, password } = await c.req.json();
+    
     const user = await prisma.user.findUnique({
       where: {
         email: email
@@ -76,6 +81,16 @@ app.post("/api/v1/user/signin", async (c) => {
       c.status(411);
       return c.json({
         message: "User not found!"
+      });
+    }
+
+    // Verifying the password
+    const isValidPassword = await verifyPassword(password, user.password);
+
+    if(!isValidPassword){
+      c.status(403);
+      return c.json({
+        message: "Password is incorrect"
       });
     }
 
