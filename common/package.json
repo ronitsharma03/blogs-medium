@@ -1,0 +1,15 @@
+{
+  "name": "@ronitkhajuria/medium-common",
+  "version": "1.0.6",
+  "description": "A npm package for the zod types for the medium like blogging website",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}
