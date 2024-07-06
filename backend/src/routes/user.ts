@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
 import { verifyPassword, hashPassword } from "../webCrypto";
-import { signinInput, signupInput } from "@ronitkhajuria/medium-common";
+import { signinInput, signupInput } from "@ronitkhajuria/medium-common"
 
 
 export const userRouter = new Hono<{
@@ -77,7 +77,14 @@ userRouter.post("/signin", async (c) => {
 
   try {
     const body = await c.req.json();
-    const {success} = signinInput.safeParse(body);
+    // const { success } = signinInput.safeParse(body);
+
+    // if(!success){
+    //   return c.json({
+    //     message: "Check inputs!"
+    //   }, {status: 411});
+    // }
+
     const user = await prisma.user.findFirst({
       where: {
         OR: [

@@ -12,7 +12,14 @@ export const blogRouter = new Hono<{
 }>();
 
 blogRouter.post("/create", authMiddleware, async (c) => {
-  const { title, content, imageUrl } = await c.req.json();
+  const body = await c.req.json();
+  const { success } = blogInput.safeParse(body);
+  if(!success){
+    return c.json({
+      message: "Check the inputs!"
+    }, {status: 411});
+  }
+
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -21,9 +28,9 @@ blogRouter.post("/create", authMiddleware, async (c) => {
     const authorId = c.get('userId');
     const createPost = await prisma.blog.create({
       data: {
-        title: title,
-        content: content,
-        imgageUrl: imageUrl,
+        title: body.title,
+        content: body.content,
+        imgageUrl: body.imageUrl,
         published: true,
         authorId: authorId,
       }
@@ -46,7 +53,15 @@ blogRouter.post("/create", authMiddleware, async (c) => {
 });
 
 blogRouter.put("/update", authMiddleware, async (c) => {
-  const { title, content, imageUrl } = await c.req.json();
+  const body = await c.req.json();
+
+  const { success } = blogInput.safeParse(body);
+  if(!success){
+    return c.json({
+      message: "Check the inputs!"
+    }, {status: 411});
+  }
+  
   const blogId = c.req.param("id");
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -58,9 +73,9 @@ blogRouter.put("/update", authMiddleware, async (c) => {
         id: blogId,
       },
       data: {
-        title: title,
-        content: content,
-        imgageUrl: imageUrl,
+        title: body.title,
+        content: body.content,
+        imgageUrl: body.imageUrl,
         published: true
       },
     });
