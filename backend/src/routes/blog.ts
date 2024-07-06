@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { Prisma, PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import authMiddleware from "../middleware";
+import { blogInput, updateBlogInput } from "@ronitkhajuria/medium-common";
 
 export const blogRouter = new Hono<{
   Bindings: {

@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
 import { verifyPassword, hashPassword } from "../webCrypto";
+import { signinInput, signupInput } from "@ronitkhajuria/medium-common";
 
 
 export const userRouter = new Hono<{
@@ -20,14 +21,21 @@ userRouter.post("/signup", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const { email, username, password, name } = await c.req.json();
+  const body = await c.req.json();
+  const { success } = signupInput.safeParse(body);
+
+  if(!success){
+    return c.json({
+        message: "Wrong Inputs!"
+    }, {status: 403});
+  }
 
   try {
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
-            {email: email},
-            {username: username}
+            {email: body.email},
+            {username: body.username}
         ]
       },
     });
@@ -38,17 +46,17 @@ userRouter.post("/signup", async (c) => {
       });
     }
 
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPassword(body.password);
     const newUser = await prisma.user.create({
       data: {
-        email: email,
-        username: username,
+        email: body.email,
+        username: body.username,
         password: hashedPassword,
-        name: name,
+        name: body.name,
       },
     });
 
-    const token = await sign({ id: newUser.id, username: username }, c.env.JWT_SECRET);
+    const token = await sign({ id: newUser.id, username: body.username }, c.env.JWT_SECRET);
 
     console.log(newUser);
     return c.json({
@@ -68,13 +76,13 @@ userRouter.post("/signin", async (c) => {
   }).$extends(withAccelerate());
 
   try {
-    const { emailorUsername, password } = await c.req.json();
-
+    const body = await c.req.json();
+    const {success} = signinInput.safeParse(body);
     const user = await prisma.user.findFirst({
       where: {
         OR: [
-            {email: emailorUsername},
-            {username: emailorUsername}
+            {email: body.emailorUsername},
+            {username: body.emailorUsername}
         ]
       },
     });
@@ -87,7 +95,7 @@ userRouter.post("/signin", async (c) => {
     }
 
     // Verifying the password
-    const isValidPassword = await verifyPassword(password, user.password);
+    const isValidPassword = await verifyPassword(body.password, user.password);
 
     if (!isValidPassword) {
       c.status(403);
@@ -96,7 +104,7 @@ userRouter.post("/signin", async (c) => {
       });
     }
 
-    const token = await sign({ id: user.id, username: emailorUsername }, c.env.JWT_SECRET);
+    const token = await sign({ id: user.id, username: body.emailorUsername }, c.env.JWT_SECRET);
 
     return c.json({
       message: "Log in successfull!",
