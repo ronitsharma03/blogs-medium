@@ -20,20 +20,21 @@ userRouter.post("/signup", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const { email, password, name } = await c.req.json();
+  const { email, username, password, name } = await c.req.json();
 
   try {
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
-            {email: email}
+            {email: email},
+            {username: username}
         ]
       },
     });
 
     if (existingUser) {
       return c.json({
-        message: "Email already exist",
+        message: "Email or username already exist",
       });
     }
 
@@ -41,18 +42,20 @@ userRouter.post("/signup", async (c) => {
     const newUser = await prisma.user.create({
       data: {
         email: email,
+        username: username,
         password: hashedPassword,
         name: name,
       },
     });
 
-    const token = await sign({ id: newUser.id }, c.env.JWT_SECRET);
+    const token = await sign({ id: newUser.id, username: username }, c.env.JWT_SECRET);
 
     console.log(newUser);
     return c.json({
       message: "Signup Successful",
       token: token,
     });
+
   } catch (error) {
     console.error(`Error signing up ${error}`);
     return c.status(403);
@@ -65,11 +68,14 @@ userRouter.post("/signin", async (c) => {
   }).$extends(withAccelerate());
 
   try {
-    const { email, password } = await c.req.json();
+    const { emailorUsername, password } = await c.req.json();
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
-        email: email,
+        OR: [
+            {email: emailorUsername},
+            {username: emailorUsername}
+        ]
       },
     });
 
@@ -90,7 +96,7 @@ userRouter.post("/signin", async (c) => {
       });
     }
 
-    const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+    const token = await sign({ id: user.id, username: emailorUsername }, c.env.JWT_SECRET);
 
     return c.json({
       message: "Log in successfull!",

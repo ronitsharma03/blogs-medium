@@ -30,7 +30,8 @@ model Blog{
   title         String
   content       String
   published     Boolean     @default(false)
-  imgage_url    String?
+  imgageUrl     String?
+  createdAt     DateTime    @default(now())
   author        User        @relation(fields: [authorId], references: [id])
   authorId      String
 } 
