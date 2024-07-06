@@ -87,13 +87,20 @@ blogRouter.get("/:username/:id", authMiddleware, async (c) => {
   try {
     const response = await prisma.blog.findFirst({
       where: {
-        id: blogId,
-        author: {
+        AND: [
+        {id: blogId},
+        {author: {
             username: c.req.param("username")
-        }
+        }}
+        ]
       }
     });
 
+    if(!response){
+        return c.json({
+            message: "No Blog found"
+        });
+    }
     return c.json({
       message: "Blog found!",
       Blogs: response,
