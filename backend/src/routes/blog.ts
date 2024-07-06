@@ -39,7 +39,7 @@ blogRouter.post("/create", authMiddleware, async (c) => {
       {
         message: "Failed to publish!",
       },
-      { status: 404 }
+      { status: 403 }
     );
   }
 });
@@ -73,7 +73,7 @@ blogRouter.put("/update", authMiddleware, async (c) => {
     console.log(`Error while updating the blog ${e}`);
     return c.json({
       message: "Error updating the Blog, try again!",
-    });
+    }, {status: 403});
   }
 });
 
@@ -110,7 +110,7 @@ blogRouter.get("/:username/:id", authMiddleware, async (c) => {
     console.log(`Error finding the blogs ${e}`);
     return c.json({
       message: "No blog found!",
-    });
+    }, {status: 403});
   }
 });
 
@@ -134,6 +134,6 @@ blogRouter.get("/allblogs", async (c) => {
     console.log(`Error while finding blogs`);
     return c.json({
         message: "No blogs found!"
-    })
+    }, {status: 403});
   }
 });
