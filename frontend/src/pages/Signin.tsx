@@ -1,4 +1,4 @@
-import { Quote } from "../components/Quote";
+import { Quote } from "../components/ui/Quote";
 
 export const Signin = () => {
   return (
