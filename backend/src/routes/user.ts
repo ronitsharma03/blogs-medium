@@ -13,71 +13,58 @@ export const userRouter = new Hono<{
 }>();
 
 userRouter.post("/signup", async (c) => {
-  const prisma = await new PrismaClient({
+  // In serverless backend one should avoid the use of global variables as possible because depending upon the runtime
+  // they just start the specific function somewhere so you may loose the global context
+  const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
   const { success } = signupInput.safeParse(body);
 
-  if (!success) {
-    return c.json(
-      {
-        message: "Wrong Inputs!",
-      },
-      { status: 403 }
-    );
+  if(!success){
+    return c.json({
+        message: "Wrong Inputs!"
+    }, {status: 403});
   }
 
   try {
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [{ email: body.email }, { username: body.username }],
+        OR: [
+            {email: body.email},
+            {username: body.username}
+        ]
       },
     });
-    console.log(existingUser);
 
     if (existingUser) {
-      return c.json(
-        {
-          message: "Email or username already exist",
-        },
-        { status: 403 }
-      );
-    } else {
-      const hashedPassword = await hashPassword(body.password);
-      const newUser = await prisma.user.create({
-        data: {
-          email: body.email,
-          username: body.username,
-          password: hashedPassword,
-          name: body.name,
-        },
+      return c.json({
+        message: "Email or username already exist",
       });
-
-      const token = await sign(
-        { id: newUser.id, username: body.username },
-        c.env.JWT_SECRET
-      );
-
-      console.log(newUser);
-      return c.json(
-        {
-          message: "Signup Successful",
-          token: token,
-        },
-        { status: 200 }
-      );
     }
-  } catch (error) {
-    console.error(`Error signing up: ${error}`);
-    return c.json(
-      {
-        message: "Error signing up!",
-        error: error,
+
+    const hashedPassword = await hashPassword(body.password);
+    const newUser = await prisma.user.create({
+      data: {
+        email: body.email,
+        username: body.username,
+        password: hashedPassword,
+        name: body.name,
       },
-      { status: 500 }
-    );
+    });
+
+    const token = await sign({ id: newUser.id, username: body.username }, c.env.JWT_SECRET);
+
+    console.log(newUser);
+    return c.json({
+      message: "Signup Successful",
+      token: token,
+    });
+
+  } catch (error) {
+    console.error(`Error signing up ${error}`);
+    return c.status(403);
   }
 });
 
