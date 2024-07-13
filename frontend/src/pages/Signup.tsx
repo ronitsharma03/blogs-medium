@@ -3,7 +3,7 @@ import { SignupAuth } from "../components/ui/SignupAuth";
 
 export const Signup = () => {
   return (
-    <div className="grid grid-cols-2">
+    <div className="lg:grid lg:grid-cols-2">
       <div className="max-lg:hidden">
         <Quote />
       </div>

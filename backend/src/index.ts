@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 // Since here nodejs runtime is not being used so the prisma client is imported from the edge
-
+import { cors } from "hono/cors";
 import authMiddleware from "./middleware";
 import { userRouter } from "./routes/user";
 import { blogRouter } from "./routes/blog";
@@ -11,6 +11,8 @@ const app = new Hono<{
     JWT_SECRET: string,
   };
 }>();
+
+app.use('/api/*', cors());
 
 app.route("/api/v1/user", userRouter);
 app.route("/api/v1/blog", blogRouter); 

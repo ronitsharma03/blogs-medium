@@ -3,70 +3,81 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
 import { verifyPassword, hashPassword } from "../webCrypto";
-import { signinInput, signupInput } from "@ronitkhajuria/medium-common"
-
+import { signinInput, signupInput } from "@ronitkhajuria/medium-common";
 
 export const userRouter = new Hono<{
-    Bindings: {
-        DATABASE_URL: string,
-        JWT_SECRET: string,
-    }
-}
->();
+  Bindings: {
+    DATABASE_URL: string;
+    JWT_SECRET: string;
+  };
+}>();
 
 userRouter.post("/signup", async (c) => {
-  // In serverless backend one should avoid the use of global variables as possible because depending upon the runtime
-  // they just start the specific function somewhere so you may loose the global context
-  const prisma = new PrismaClient({
+  const prisma = await new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
   const { success } = signupInput.safeParse(body);
 
-  if(!success){
-    return c.json({
-        message: "Wrong Inputs!"
-    }, {status: 403});
+  if (!success) {
+    return c.json(
+      {
+        message: "Wrong Inputs!",
+      },
+      { status: 403 }
+    );
   }
 
   try {
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [
-            {email: body.email},
-            {username: body.username}
-        ]
+        OR: [{ email: body.email }, { username: body.username }],
       },
     });
+    console.log(existingUser);
 
     if (existingUser) {
-      return c.json({
-        message: "Email or username already exist",
+      return c.json(
+        {
+          message: "Email or username already exist",
+        },
+        { status: 403 }
+      );
+    } else {
+      const hashedPassword = await hashPassword(body.password);
+      const newUser = await prisma.user.create({
+        data: {
+          email: body.email,
+          username: body.username,
+          password: hashedPassword,
+          name: body.name,
+        },
       });
+
+      const token = await sign(
+        { id: newUser.id, username: body.username },
+        c.env.JWT_SECRET
+      );
+
+      console.log(newUser);
+      return c.json(
+        {
+          message: "Signup Successful",
+          token: token,
+        },
+        { status: 200 }
+      );
     }
-
-    const hashedPassword = await hashPassword(body.password);
-    const newUser = await prisma.user.create({
-      data: {
-        email: body.email,
-        username: body.username,
-        password: hashedPassword,
-        name: body.name,
-      },
-    });
-
-    const token = await sign({ id: newUser.id, username: body.username }, c.env.JWT_SECRET);
-
-    console.log(newUser);
-    return c.json({
-      message: "Signup Successful",
-      token: token,
-    });
-
   } catch (error) {
-    console.error(`Error signing up ${error}`);
-    return c.status(403);
+    console.error(`Error signing up: ${error}`);
+    return c.json(
+      {
+        message: "Error signing up!",
+        error: error,
+      },
+      { status: 500 }
+    );
   }
 });
 
@@ -88,9 +99,9 @@ userRouter.post("/signin", async (c) => {
     const user = await prisma.user.findFirst({
       where: {
         OR: [
-            {email: body.emailorUsername},
-            {username: body.emailorUsername}
-        ]
+          { email: body.emailorUsername },
+          { username: body.emailorUsername },
+        ],
       },
     });
 
@@ -111,20 +122,22 @@ userRouter.post("/signin", async (c) => {
       });
     }
 
-    const token = await sign({ id: user.id, username: body.emailorUsername }, c.env.JWT_SECRET);
+    const token = await sign(
+      { id: user.id, username: body.emailorUsername },
+      c.env.JWT_SECRET
+    );
 
     return c.json({
-      message: "Log in successfull!",
+      message: "Log in successful!",
       token: token,
     });
   } catch (e) {
-    console.log(`Error while signing in ${e}`);
+    console.log(`Error while signing in: ${e}`);
 
     c.status(403);
     return c.json({
       message: "Error while logging!",
+      error: e,
     });
   }
 });
-
-

@@ -1,7 +1,7 @@
 export const Quote = () => {
   return (
     <div className="bg-slate-200 h-screen flex justify-center">
-      <div className="flex justify-center flex-col">
+      <div className="flex justify-center flex-col p-4">
         <div className="lg:max-w-2xl text-3xl font-bold">
         “It should feel genuinely good to earn income from your blog - you should be driven by a healthy ambition to succeed. If your blog provides genuine value, you fully deserve to earn income from it.”
         </div>
