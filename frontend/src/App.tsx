@@ -2,9 +2,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Signin } from "./pages/Signin";
 import { Signup } from "./pages/Signup";
 import { Blog } from "./pages/Blog";
-import { Landing } from "./pages/Landing";
 import { Profile } from "./pages/Profile";
 import { Home } from "./pages/Home";
+import Landing from "./pages/Landing";
 
 
 const App = () => {

@@ -13,7 +13,7 @@ export const SignupAuth = () => {
   const [confirm, setConfirm] = useState<string>("");
   const [matchError, setMatchError] = useState<boolean | null>(false);
 
-  //   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const confirmPassword = () => {
     if (password === "" || confirm === "") {
@@ -49,14 +49,13 @@ export const SignupAuth = () => {
       }
       setloading(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}api/v1/user/signup`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/signup`,
         {
           email,
           username,
           password,
           name,
-        },
-        { headers: { "Content-Type": "application/json" } }
+        }
       );
 
       console.log(response.data);
@@ -66,7 +65,8 @@ export const SignupAuth = () => {
         id: "empty",
       });
       console.log("Signup successful");
-      //   navigate("/signin");
+      await new Promise(r => setTimeout(r, 1000));
+      navigate("/home");
     } catch (error) {
       console.log(`Error Signing up ${error}`);
 

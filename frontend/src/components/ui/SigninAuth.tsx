@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
+import { Spinner } from "./Spinner";
 
 export const SigninAuth = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirm, setConfirm] = useState<string>("");
   const [matchError, setMatchError] = useState<boolean | null>(false);
+  const [loading, setloading] = useState<boolean | null>(null);
+
+  const navigate = useNavigate();
 
   const confirmPassword = () => {
     if (password === "" || confirm === "") {
@@ -24,31 +30,50 @@ export const SigninAuth = () => {
   }, [password, confirm]);
 
   const SigninReq = async () => {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/v1/user/signin`, { 
-      
-        // Adding method type 
-        method: "POST",  
-        // Adding body or contents to send 
-        body: JSON.stringify({ 
-            email: email, 
-            password: password, 
-        }),  
-        // Adding headers to the request 
-        headers: { 
-            "Content-type": "application/json; charset=UTF-8"
-        } 
-    }) 
-  }
+    try {
+      setloading(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/signin`,
+        {
+          email: email,
+          password: password,
+        }
+      );
+
+      console.log(response);
+      setloading(false);
+      toast.success(response.data.message, {
+        duration: 2000,
+        id: "signin",
+      });
+      await new Promise((r) => setTimeout(r, 1000));
+      navigate("/home");
+    } catch (error) {
+      console.log(`Error Signing in ${error}`);
+
+      toast.error("Error signing in", {
+        duration: 2000,
+        id: "empty",
+      });
+
+      setloading(false);
+      return;
+    }
+  };
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
+      <div>
+        <Toaster 
+        position="bottom-left"
+        />
+      </div>
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Welcome Back
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
               <div>
                 <label
                   htmlFor="email"
@@ -64,7 +89,7 @@ export const SigninAuth = () => {
                   placeholder="name@company.com"
                   required
                   onChange={(e) => {
-                    setEmail(e.target.value)
+                    setEmail(e.target.value);
                   }}
                 />
               </div>
@@ -120,8 +145,15 @@ export const SigninAuth = () => {
               <button
                 type="submit"
                 className="w-full text-white bg-black hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-black dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                onClick={SigninReq}
               >
-                Sign in
+                {loading ? (
+                <div>
+                  <Spinner />
+                </div>
+              ) : (
+                "Sign in"
+              )}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don't have an account?{" "}
@@ -132,7 +164,6 @@ export const SigninAuth = () => {
                   Signup here
                 </Link>
               </p>
-            </form>
           </div>
         </div>
       </div>
