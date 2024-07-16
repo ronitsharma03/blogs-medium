@@ -1,5 +1,3 @@
-
-
 const Header = () => (
   <header className="px-10 lg:px-16 py-6 flex items-center">
     <a className="flex items-center justify-center gap-4" href="#" rel="ugc">

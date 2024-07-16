@@ -59,6 +59,7 @@ export const SignupAuth = () => {
       );
 
       console.log(response.data);
+      localStorage.setItem("token", response.data.token);
       setloading(false);
       toast.success(response.data.message, {
         duration: 2000,
@@ -66,7 +67,7 @@ export const SignupAuth = () => {
       });
       console.log("Signup successful");
       await new Promise(r => setTimeout(r, 1000));
-      navigate("/home");
+      navigate("/profile");
     } catch (error) {
       console.log(`Error Signing up ${error}`);
 
@@ -76,7 +77,7 @@ export const SignupAuth = () => {
       });
 
       setloading(false);
-      return;
+      navigate("/signup");
     }
   };
 
