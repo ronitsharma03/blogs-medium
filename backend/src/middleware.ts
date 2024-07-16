@@ -26,7 +26,7 @@ const authMiddleware = createMiddleware<{
   try {
     const decodedToken = await verify(token, c.env.JWT_SECRET);
 
-    if (!decodedToken.id && !decodedToken.username) {
+    if (!decodedToken.id) {
       return c.json(
         {
           message: "Not authorized",
@@ -34,8 +34,7 @@ const authMiddleware = createMiddleware<{
         { status: 403 }
       );
     }
-
-    c.set("loggedUsername", decodedToken.username);
+    
     c.set("userId", decodedToken.id);
 
     await next();

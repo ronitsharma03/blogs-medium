@@ -8,6 +8,7 @@
     "@prisma/client": "^5.16.2",
     "@prisma/extension-accelerate": "^1.1.0",
     "@ronitkhajuria/medium-common": "^1.0.6",
+    "buffer": "^6.0.3",
     "hono": "^4.4.7",
     "prisma": "^5.16.2"
   },

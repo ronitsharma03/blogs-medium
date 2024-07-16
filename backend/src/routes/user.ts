@@ -2,8 +2,10 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
+// import { Buffer } from "buffer";
 import { verifyPassword, hashPassword } from "../webCrypto";
 import { signinInput, signupInput } from "@ronitkhajuria/medium-common";
+import authMiddleware from "../middleware";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -11,6 +13,18 @@ export const userRouter = new Hono<{
     JWT_SECRET: string;
   };
 }>();
+
+// export async function hashFunction(message: string): Promise<string> {
+//   const encodedMsg = new TextEncoder().encode(message);
+//   const msgDigest = await crypto.subtle.digest(
+//     {
+//       name: "SHA-256",
+//     },
+//     encodedMsg
+//   );
+//   const base64String = Buffer.from(msgDigest).toString("base64");
+//   return base64String;
+// }
 
 userRouter.post("/signup", async (c) => {
   // In serverless backend one should avoid the use of global variables as possible because depending upon the runtime
@@ -20,30 +34,15 @@ userRouter.post("/signup", async (c) => {
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
-  const { success } = signupInput.safeParse(body);
+  // const { success } = signupInput.safeParse(body);
 
-  if(!success){
-    return c.json({
-        message: "Wrong Inputs!"
-    }, {status: 403});
-  }
+  // if(!success){
+  //   return c.json({
+  //       message: "Wrong Inputs!"
+  //   }, {status: 403});
+  // }
 
   try {
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-            {email: body.email},
-            {username: body.username}
-        ]
-      },
-    });
-
-    if (existingUser) {
-      return c.json({
-        message: "Email or username already exist",
-      });
-    }
-
     const hashedPassword = await hashPassword(body.password);
     const newUser = await prisma.user.create({
       data: {
@@ -54,17 +53,25 @@ userRouter.post("/signup", async (c) => {
       },
     });
 
-    const token = await sign({ id: newUser.id, username: body.username }, c.env.JWT_SECRET);
+    const token = await sign(
+      { id: newUser.id, username: body.username },
+      c.env.JWT_SECRET
+    );
 
     console.log(newUser);
     return c.json({
       message: "Signup Successful",
       token: token,
     });
-
   } catch (error) {
     console.error(`Error signing up ${error}`);
-    return c.status(403);
+    return c.json(
+      {
+        message: "Error signing up",
+        error: error,
+      },
+      { status: 404 }
+    );
   }
 });
 
@@ -85,10 +92,7 @@ userRouter.post("/signin", async (c) => {
 
     const user = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email: body.emailorUsername },
-          { username: body.emailorUsername },
-        ],
+        email: body.email,
       },
     });
 
@@ -100,19 +104,16 @@ userRouter.post("/signin", async (c) => {
     }
 
     // Verifying the password
-    const isValidPassword = await verifyPassword(body.password, user.password);
+    const hashedPassword = await verifyPassword(body.password, user.password);
 
-    if (!isValidPassword) {
+    if (!hashedPassword) {
       c.status(403);
       return c.json({
         message: "Password is incorrect",
       });
     }
 
-    const token = await sign(
-      { id: user.id, username: body.emailorUsername },
-      c.env.JWT_SECRET
-    );
+    const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
     return c.json({
       message: "Log in successful!",
@@ -127,4 +128,41 @@ userRouter.post("/signin", async (c) => {
       error: e,
     });
   }
+});
+
+userRouter.get("/me", authMiddleware, async (c) => {
+  const userId = c.get("userId");
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL
+  }).$extends(withAccelerate());
+
+    const response = await prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    });
+    if(!response){
+      return c.json({
+        message: "User not found!",
+        id: userId
+      });
+    }
+    const username = response.username;
+    const email = response.email;
+    const name = response.name;
+    const bio = response.bio;
+    const profilePic = response.profile_pic;
+
+    return c.json(
+      {
+        message: "You are logged in!",
+        id: userId,
+        username: username,
+        email: email,
+        name: name,
+        bio: bio,
+        profilePic: profilePic
+      },
+      { status: 200 }
+    );
 });
