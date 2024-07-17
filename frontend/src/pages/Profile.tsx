@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Spinner } from "../components/ui/Spinner";
 
@@ -56,7 +56,7 @@ export const Profile = () => {
           </div>
           <div className="flex flex-col max-w-5xl max-md:items-center">
             <div className="flex flex-row gap-16 max-md:flex-col max-md:items-center">
-              <div className="flex flex-col items-center justify-start">
+              <div className="flex flex-col items-center justify-center max-md:flex-row max-md:items-center max-md:justify-center gap-4">
                 <div className="w-28 h-28 rounded-full flex items-center justify-center">
                   {profile == null ? (
                     <div
@@ -69,11 +69,13 @@ export const Profile = () => {
                     <img src={profile} />
                   )}
                 </div>
-                <div className="text-xl mt-4">{name}</div>
-                <div className="text-lg mt-2">@ {username}</div>
+                <div className="flex flex-col items-center justify-center">
+                  <div className="text-3xl mt-2 font-medium">{name}</div>
+                  <div className="text-lg mt-2">@ {username}</div>
+                </div>
               </div>
               <div className="flex flex-col items-left justify-center gap-3 max-md:max-w-lg">
-                <span className="text-4xl font-bold">About</span>
+                <span className="text-4xl font-medium">About</span>
                 <div className="text-xl text-slate-500">{bio}</div>
               </div>
             </div>
