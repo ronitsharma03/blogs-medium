@@ -1,6 +1,6 @@
 export const Spinner = () => {
   return (
-    <div className="flex items-center justify-center gap-2">
+    <div className="w-full h-full flex items-center justify-center gap-2">
       <svg
         aria-hidden="true"
         className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-500 fill-black"

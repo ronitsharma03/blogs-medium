@@ -43,16 +43,12 @@ export const SigninAuth = () => {
       console.log(response);
       localStorage.setItem("token", response.data.token);
       setloading(false);
-      toast.success(response.data.message, {
-        duration: 2000,
-        id: "signin",
-      });
-      await new Promise((r) => setTimeout(r, 1000));
+      // await new Promise((r) => setTimeout(r, 1000));
       navigate("/home");
     } catch (error) {
       console.log(`Error Signing in ${error}`);
 
-      toast.error("Error signing in", {
+      toast.error(`Something went wrong`, {
         duration: 2000,
         id: "empty",
       });
