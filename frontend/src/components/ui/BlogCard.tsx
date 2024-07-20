@@ -17,13 +17,13 @@ export const BlogCard = ({
         <div>
           <Avatar name={authorname} />
         </div>
-        <div className="text-md text-slate-900 font-medium">{authorname}</div>
+        <div className="text-md text-slate-900 font-normal">{authorname}</div>
         <div className="text-slate-500 font-light text-xs">&#9679;</div>
-        <div className="text-sm text-slate-600">{publishedDate}</div>
+        <div className="text-sm text-slate-600 font-light">{publishedDate}</div>
       </div>
       <div className="mt-8">
         <div className="font-bold text-4xl mb-2">
-          {title.length > 100 ? title.slice(0, 125) + "..." : title}
+          {title.length > 100 ? title.slice(0, 100) + "..." : title}
         </div>
         <div className="text-slate-800 text-lg flex items-start mt-1">
           {content.length > 200 ? (
@@ -50,10 +50,10 @@ export const BlogCard = ({
   );
 };
 
-const Avatar = ({ name }: { name: string }) => {
+export const Avatar = ({ name }: { name: string }) => {
   return (
-    <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-      <span className="font-medium text-white">
+    <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center">
+      <span className="font-medium text-black">
         {name.charAt(0).toUpperCase() +
           name.split(" ")[1].charAt(0).toUpperCase()}
       </span>

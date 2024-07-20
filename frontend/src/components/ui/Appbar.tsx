@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { IconUser, IconWrite } from "./Icon";
+import { Avatar } from "./BlogCard";
 
 export const Appbar = () => {
     const navigate = useNavigate();
@@ -22,11 +24,11 @@ export const Appbar = () => {
         <span className="text-xl font-semibold">Medium</span>
       </a>
       <nav className="ml-auto flex gap-4 sm:gap-6">
-        {["Write", "profile"].map((item, index) => (
+        {["Write", "Profile"].map((item, index) => (
           <button key={index} onClick={() => {
-            navigate(`/${item}`)
+            navigate(`/${item.toLowerCase()}`)
           }}>
-            {item}
+            {item === "Write" ?  <div className="flex items-center justify-center gap-1"><IconWrite/> Write</div> : <Avatar name="Ronit khajuria" />}
           </button>
         ))}
       </nav>
