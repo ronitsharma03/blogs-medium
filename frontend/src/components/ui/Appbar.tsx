@@ -1,12 +1,24 @@
 import { useNavigate } from "react-router-dom";
-import { IconUser, IconWrite } from "./Icon";
+import { IconWrite } from "./Icon";
 import { Avatar } from "./BlogCard";
+import { useState } from "react";
+import { Logout } from "./Logout";
 
 export const Appbar = () => {
-    const navigate = useNavigate();
+  const [clicked, setClicked] = useState<boolean>(false);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    setClicked(!clicked);
+  };
+
   return (
     <header className="px-10 lg:px-16 py-6 flex items-center border-b">
-      <a className="flex items-center justify-center gap-2" href="/home" rel="ugc">
+      <a
+        className="flex items-center justify-center gap-2"
+        href="/home"
+        rel="ugc"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -25,12 +37,27 @@ export const Appbar = () => {
       </a>
       <nav className="ml-auto flex gap-4 sm:gap-6">
         {["Write", "Profile"].map((item, index) => (
-          <button key={index} onClick={() => {
-            navigate(`/${item.toLowerCase()}`)
-          }}>
-            {item === "Write" ?  <div className="flex items-center justify-center gap-1"><IconWrite/> Write</div> : <Avatar name="Ronit khajuria" />}
+          <button
+            key={index}
+            onClick={() => {
+            //   navigate(`/${item.toLowerCase()}`);
+            }}
+          >
+            {item === "Write" ? (
+              <div className="flex items-center justify-center gap-1">
+                <IconWrite /> Write
+              </div>
+            ) : (
+              <button onClick={handleClick}>
+                <Avatar name="Ronit khajuria" />
+              </button>
+            )}
           </button>
         ))}
+        {
+            clicked ? <div className="absolute top-20 right-10"><Logout /></div> : null
+        }
+        
       </nav>
     </header>
   );
