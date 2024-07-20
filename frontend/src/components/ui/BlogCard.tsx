@@ -53,7 +53,7 @@ export const BlogCard = ({
 const Avatar = ({ name }: { name: string }) => {
   return (
     <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-      <span className="font-medium">
+      <span className="font-medium text-white">
         {name.charAt(0).toUpperCase() +
           name.split(" ")[1].charAt(0).toUpperCase()}
       </span>
