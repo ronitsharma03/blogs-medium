@@ -1,16 +1,64 @@
 import { useNavigate } from "react-router-dom";
 import { IconWrite } from "./Icon";
 import { Avatar } from "./BlogCard";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Logout } from "./Logout";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { nameSelector } from "../../store/selector";
+import { ProfileAtom } from "../../store/atom";
+import { Spinner } from "./Spinner";
 
 export const Appbar = () => {
-  const [clicked, setClicked] = useState<boolean>(false);
+  const [clicked, setClicked] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const fetchUser = useRecoilValue(nameSelector);
+  const setUser = useSetRecoilState(ProfileAtom);
+
+  useEffect(() => {
+    if (fetchUser) {
+      setUser(fetchUser);
+    }
+    setLoading(false);
+  }, [fetchUser, setUser]);
+
+  const loggedUser = useRecoilValue(ProfileAtom);
+
+  const logoutFn = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const profileFn = () => {
+    navigate(`/profile/${loggedUser.username}`);
+  };
 
   const handleClick = () => {
     setClicked(!clicked);
   };
+
+  useEffect(() => {
+    // Function to check if click is outside the dropdown
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setClicked(false);
+      }
+    };
+
+    // Add event listener to document
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="px-10 lg:px-16 py-6 flex items-center border-b">
@@ -39,25 +87,24 @@ export const Appbar = () => {
         {["Write", "Profile"].map((item, index) => (
           <button
             key={index}
-            onClick={() => {
-            //   navigate(`/${item.toLowerCase()}`);
-            }}
+            onClick={item === "Profile" ? handleClick : () => {}}
           >
             {item === "Write" ? (
               <div className="flex items-center justify-center gap-1">
                 <IconWrite /> Write
               </div>
+            ) : loading ? (
+              <Spinner />
             ) : (
-              <button onClick={handleClick}>
-                <Avatar name="Ronit khajuria" />
-              </button>
+              <Avatar name={loggedUser.fullname} />
             )}
           </button>
         ))}
-        {
-            clicked ? <div className="absolute top-20 right-10"><Logout /></div> : null
-        }
-        
+        {clicked && (
+          <div className="absolute top-20 right-10" ref={dropdownRef}>
+            <Logout handleLogout={logoutFn} handleProfile={profileFn} />
+          </div>
+        )}
       </nav>
     </header>
   );

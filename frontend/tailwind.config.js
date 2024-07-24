@@ -75,8 +75,9 @@ export default {
           "Segoe UI Symbol",
           "Noto Color Emoji",
         ],
-        heading: ['var(--font-heading)', ...fontFamily.sans],
-        body: ['var(--font-body)', ...fontFamily.sans],
+        primaryRegular: ['charter'],
+        primaryBold: ['bold'],
+        heading: ['var(--font-heading)', ...fontFamily.sans]
       },
       borderRadius: {
         xl: `calc(var(--radius) + 4px)`,

@@ -41,6 +41,7 @@ export const SigninAuth = () => {
       );
 
       console.log(response);
+      localStorage.removeItem("token");
       localStorage.setItem("token", response.data.token);
       setloading(false);
       // await new Promise((r) => setTimeout(r, 1000));

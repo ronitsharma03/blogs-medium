@@ -17,7 +17,6 @@ export const Spinner = () => {
           fill="currentFill"
         />
       </svg>
-      <span className="">Loading...</span>
     </div>
   );
 };

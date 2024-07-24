@@ -28,18 +28,16 @@
     }
   }
   
-  @layer base {
-    * {
-      @apply border-border;
-    }
-  
-    body {
-      @apply bg-background text-foreground font-body;
-    }
-  
-    h1, h2, h3, h4, h5, h6 {
-      @apply font-heading;
-    }
+  @font-face {
+    font-family: "charter";
+    src: local("Charter"),
+    url("./assets/fonts/Charter.ttf") format("truetype")
+  }
+
+  @font-face {
+    font-family: "bold";
+    src: local("bold"),
+    url("./assets/fonts/bold.ttf") format("truetype")
   }
 
   body::-webkit-scrollbar {
