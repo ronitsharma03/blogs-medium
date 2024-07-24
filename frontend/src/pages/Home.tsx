@@ -1,4 +1,3 @@
-
 import { Appbar } from "../components/ui/Appbar";
 import { BlogCard } from "../components/ui/BlogCard";
 import { Spinner } from "../components/ui/Spinner";
@@ -19,6 +18,11 @@ export const Home = () => {
         <div className="flex justify-center">
           <div className="flex justify-center flex-col max-w-4xl">
             {blogs.map((blog, index) => {
+              const date = String(blog.createdAt)
+                .split("T")[0]
+                .split("-")
+                .reverse()
+                .join("-");
               return (
                 <BlogCard
                   key={index}
@@ -26,7 +30,7 @@ export const Home = () => {
                   authorname={blog.author.name}
                   title={blog.title}
                   content={blog.content}
-                  publishedDate={String(blog.createdAt).split("T")[0]}
+                  publishedDate={date}
                 />
               );
             })}

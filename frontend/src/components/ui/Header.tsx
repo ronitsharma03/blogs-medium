@@ -15,11 +15,11 @@ const Header = () => (
       >
         <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
       </svg>
-      <span className="text-xl font-semibold">Blogging App</span>
+      <span className="text-2xl font-primaryBold tracking-wider">Blogging App</span>
     </a>
     <nav className="ml-auto flex gap-4 sm:gap-6">
       {["Blog", "Contact"].map((item, index) => (
-        <a key={index} className="text-sm font-medium hover:underline underline-offset-4" href="/" rel="ugc">
+        <a key={index} className="text-lg font-semibold hover:underline underline-offset-4 font-primaryRegular" href="/" rel="ugc">
           {item}
         </a>
       ))}

@@ -51,17 +51,17 @@ export const FrontSection = () => {
       </div>
       <div className="flex flex-row">
         <div className="flex flex-col">
-          <div className="max-sm:text-5xl max-md:w-full max-md:text-6xl md:text-8xl font-serif font-extrabold max-w-5xl tracking-tight px-12 py-8">
+          <div className="max-sm:text-5xl max-md:w-full max-md:text-6xl md:text-8xl max-w-5xl px-12 py-4 font-primaryRegular">
             Effortless Content Creation and Sharing
           </div>
-          <div className="text-2xl font-serif font-lighter max-w-5xl tracking-normal px-12">
+          <div className="text-2xl font-primaryRegular font-lighter max-w-5xl tracking-normal px-12 pb-4">
             A place to read, write and deepen your thoughts. <br />
             Unleash your creativity and reach a wider audience with our powerful
             blogging platform.
           </div>
           <div className="max-w-lg px-12 py-4">
             <button
-              className="bg-black text-white px-10 py-2 rounded-md flex items-center justify-center"
+              className="bg-black text-white px-10 py-2 w-52 rounded-md flex items-center justify-center"
               onClick={checkAuth}
             >
               {loading ? <Spinner /> : "Get Started"}
