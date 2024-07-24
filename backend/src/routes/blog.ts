@@ -8,16 +8,19 @@ export const blogRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;
     JWT_SECRET: string;
-  }
+  };
 }>();
 
 blogRouter.post("/create", authMiddleware, async (c) => {
   const body = await c.req.json();
   const { success } = blogInput.safeParse(body);
-  if(!success){
-    return c.json({
-      message: "Check the inputs!"
-    }, {status: 411});
+  if (!success) {
+    return c.json(
+      {
+        message: "Check the inputs!",
+      },
+      { status: 411 }
+    );
   }
 
   const prisma = new PrismaClient({
@@ -25,7 +28,7 @@ blogRouter.post("/create", authMiddleware, async (c) => {
   }).$extends(withAccelerate());
 
   try {
-    const authorId = c.get('userId');
+    const authorId = c.get("userId");
     const createPost = await prisma.blog.create({
       data: {
         title: body.title,
@@ -33,7 +36,7 @@ blogRouter.post("/create", authMiddleware, async (c) => {
         imgageUrl: body.imageUrl,
         published: true,
         authorId: authorId,
-      }
+      },
     });
 
     return c.json({
@@ -56,12 +59,15 @@ blogRouter.put("/update", authMiddleware, async (c) => {
   const body = await c.req.json();
 
   const { success } = blogInput.safeParse(body);
-  if(!success){
-    return c.json({
-      message: "Check the inputs!"
-    }, {status: 411});
+  if (!success) {
+    return c.json(
+      {
+        message: "Check the inputs!",
+      },
+      { status: 411 }
+    );
   }
-  
+
   const blogId = c.req.param("id");
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -76,7 +82,7 @@ blogRouter.put("/update", authMiddleware, async (c) => {
         title: body.title,
         content: body.content,
         imgageUrl: body.imageUrl,
-        published: true
+        published: true,
       },
     });
 
@@ -84,16 +90,57 @@ blogRouter.put("/update", authMiddleware, async (c) => {
       message: "Blog updated successfully!",
       id: blogId,
     });
-
   } catch (e) {
     console.log(`Error while updating the blog ${e}`);
-    return c.json({
-      message: "Error updating the Blog, try again!",
-    }, {status: 403});
+    return c.json(
+      {
+        message: "Error updating the Blog, try again!",
+      },
+      { status: 403 }
+    );
   }
 });
 
-blogRouter.get("/:username/:id", authMiddleware, async (c) => {
+blogRouter.get("/allblogs", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const response = await prisma.blog.findMany({
+      where: {
+        published: true,
+      },
+      select: {
+        content: true,
+        title: true,
+        id: true,
+        author: {
+          select: {
+            name: true
+          }
+        },
+        createdAt: true
+      }
+    });
+
+    return c.json({
+      message: "Welcome User",
+      Blogs: response,
+    });
+  } catch (e) {
+    console.log(`Error while finding blogs`);
+    return c.json(
+      {
+        message: "No blogs found!",
+      },
+      { status: 403 }
+    );
+  }
+});
+
+
+blogRouter.get("/:id", authMiddleware, async (c) => {
   const blogId = c.req.param("id");
 
   const prisma = new PrismaClient({
@@ -103,48 +150,37 @@ blogRouter.get("/:username/:id", authMiddleware, async (c) => {
   try {
     const response = await prisma.blog.findFirst({
       where: {
-        id: blogId
+        id: blogId,
+      },
+      select: {
+        title: true,
+        content: true,
+        id: true,
+        author: {
+          select: {
+            name: true
+          }
+        },
+        createdAt: true
       }
     });
 
-    if(!response){
-        return c.json({
-            message: "No Blog found"
-        });
+    if (!response) {
+      return c.json({
+        message: "No Blog found",
+      });
     }
     return c.json({
       message: "Blog found!",
       Blogs: response,
     });
-
   } catch (e) {
     console.log(`Error finding the blogs ${e}`);
-    return c.json({
-      message: "No blog found!",
-    }, {status: 403});
-  }
-});
-
-blogRouter.get("/allblogs", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
-  try{
-    const response = await prisma.blog.findMany({
-        where: {
-            published: true
-        }
-    });
-
-    return c.json({
-        message: "Welcome User",
-        Blogs: response
-    });
-  }catch(e){
-    console.log(`Error while finding blogs`);
-    return c.json({
-        message: "No blogs found!"
-    }, {status: 403});
+    return c.json(
+      {
+        message: "No blog found!",
+      },
+      { status: 403 }
+    );
   }
 });
