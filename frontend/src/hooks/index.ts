@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export interface Blogs {
   id: string;
@@ -9,6 +10,7 @@ export interface Blogs {
     name: string;
   };
   createdAt: Date;
+  imageLink: string;
 }
 
 export const useBlogs = () => {
@@ -68,4 +70,78 @@ export const useGetBlog = (blogId: string) => {
     loading,
     blogs,
   };
+};
+
+export const useAuth = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response.data) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (e) {
+        console.log(`${e} Error Authenticating`);
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  return { isAuthenticated };
+};
+
+interface useBlogProps {
+  title: string;
+  content: string;
+  imagelink: string;
+}
+
+export const useBlogPublish = ({ title, content, imagelink }: useBlogProps) => {
+  const publish = async () => {
+    try{
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/create`,
+        {
+          title: title,
+          content: content,
+          imgageUrl: imagelink,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      if(!response){
+        return false;
+      }
+      toast.success("Blog published", {
+        id: "publish",
+        duration: 1000
+      });
+      return true;
+    }catch(e){
+      console.log(`Error publishing blog ${e}`);
+      toast.error("Something went wrong", {
+        id: "publish",
+        duration: 1000
+      });
+    }
+  };
+  return publish();
 };

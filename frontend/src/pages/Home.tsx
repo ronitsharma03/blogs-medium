@@ -1,22 +1,22 @@
-import { Appbar } from "../components/ui/Appbar";
+
 import { BlogCard } from "../components/ui/BlogCard";
 import { Spinner } from "../components/ui/Spinner";
 import { useBlogs } from "../hooks";
-import { RecoilRoot } from "recoil";
+
 
 export const Home = () => {
   const { loading, blogs } = useBlogs();
 
   return (
     <section>
-      <RecoilRoot>
-        <Appbar />
-      </RecoilRoot>
+      
       {loading ? (
-        <Spinner />
+        <div className="h-screen">
+          <Spinner />
+        </div>
       ) : (
         <div className="flex justify-center">
-          <div className="flex justify-center flex-col max-w-4xl">
+          <div className="flex justify-center flex-col max-w-6xl">
             {blogs.map((blog, index) => {
               const date = String(blog.createdAt)
                 .split("T")[0]
@@ -31,6 +31,7 @@ export const Home = () => {
                   title={blog.title}
                   content={blog.content}
                   publishedDate={date}
+                  imageLink={blog.imageLink}
                 />
               );
             })}

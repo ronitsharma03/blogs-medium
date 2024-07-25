@@ -33,7 +33,27 @@ export const ProfileAtom = atom({
     default: {
         username: "",
         fullname: "",
-        email: ""
+        email: "",
+        id: ""
     }
 });
+
+export const isAuthenticatedState = atom({
+  key: 'isAuthenticatedState',
+  default: false, // Default state when the user is not authenticated
+});
+
+
+// export const BlogAtomFamily = atomFamily({
+//     key: "BlogAtomFamily",
+//     default: {
+//         title: "",
+//         content: "",
+//         author: {
+//             name: ""
+//         },
+//         createdAt: ""
+//     }
+// });
+
 

@@ -1,7 +1,5 @@
 import { useParams } from "react-router-dom";
 import { useGetBlog } from "../hooks";
-import { Appbar } from "../components/ui/Appbar";
-import Footer from "../components/ui/Footer";
 import { Spinner } from "../components/ui/Spinner";
 import { Avatar } from "../components/ui/BlogCard";
 
@@ -12,7 +10,6 @@ export const Blog = () => {
 
   return (
     <section>
-      <Appbar />
       {loading ? (
         <div className="h-screen">
           <Spinner />
@@ -20,13 +17,13 @@ export const Blog = () => {
       ) : (
         <div className="w-full h-screen flex justify-center mt-10">
           <div className="max-w-3xl p-5 h-full">
-            <div className="text-5xl font-extrabold mb-6">
-              {blogs?.title}
-            </div>
+            <div className="text-5xl font-extrabold mb-6">{blogs?.title}</div>
             <div className="flex items-center gap-3 mb-4 border-t border-b py-3">
-              <div><Avatar name={String(blogs?.author?.name)} /></div>
               <div>
-                {blogs?.author?.name} | {" "}
+                <Avatar name={String(blogs?.author?.name)} />
+              </div>
+              <div>
+                {blogs?.author?.name} |{" "}
                 {String(blogs?.createdAt)
                   .split("T")[0]
                   .split("-")
@@ -40,7 +37,6 @@ export const Blog = () => {
           </div>
         </div>
       )}
-      <Footer />
     </section>
   );
 };

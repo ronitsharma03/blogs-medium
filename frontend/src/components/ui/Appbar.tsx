@@ -8,6 +8,7 @@ import { nameSelector } from "../../store/selector";
 import { ProfileAtom } from "../../store/atom";
 import { Spinner } from "./Spinner";
 
+
 export const Appbar = () => {
   const [clicked, setClicked] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -61,7 +62,7 @@ export const Appbar = () => {
   }, []);
 
   return (
-    <header className="px-10 lg:px-16 py-6 flex items-center border-b">
+    <header className="px-10 lg:px-16 py-6 flex items-center border-b sticky top-0 left-0 bg-white mb-10 z-10 shadow-md">
       <a
         className="flex items-center justify-center gap-2"
         href="/home"
@@ -81,15 +82,23 @@ export const Appbar = () => {
         >
           <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
         </svg>
-        <span className="text-2xl font-semibold font-primaryRegular tracking-wider">Medium</span>
+        <span className="text-2xl font-medium font-primaryRegular tracking-wider">
+          Medium
+        </span>
       </a>
       <nav className="ml-auto flex gap-4 sm:gap-6">
-        {["Write", "Profile"].map((item, index) => (
+        {["write", "profile"].map((item, index) => (
           <button
             key={index}
-            onClick={item === "Profile" ? handleClick : () => {}}
+            onClick={() => {
+              if(item === "Profile"){
+                handleClick();
+                return;
+              }
+              navigate(`${item}`);
+            }}
           >
-            {item === "Write" ? (
+            {item === "write" ? (
               <div className="flex items-center justify-center gap-1">
                 <IconWrite /> Write
               </div>
@@ -109,3 +118,5 @@ export const Appbar = () => {
     </header>
   );
 };
+
+
