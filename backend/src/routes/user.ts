@@ -133,36 +133,48 @@ userRouter.post("/signin", async (c) => {
 userRouter.get("/me", authMiddleware, async (c) => {
   const userId = c.get("userId");
   const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL
+    datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
-    const response = await prisma.user.findUnique({
-      where: {
-        id: userId
-      }
-    });
-    if(!response){
-      return c.json({
-        message: "User not found!",
-        id: userId
-      });
-    }
-    const username = response.username;
-    const email = response.email;
-    const name = response.name;
-    const bio = response.bio;
-    const profilePic = response.profile_pic;
-
-    return c.json(
-      {
-        message: "You are logged in!",
-        id: userId,
-        username: username,
-        email: email,
-        name: name,
-        bio: bio,
-        profilePic: profilePic
+  const response = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      blogs: {
+        select: {
+          title: true,
+          content: true,
+          createdAt: true,
+          id: true,
+        },
       },
-      { status: 200 }
-    );
+    },
+  });
+
+  if (!response) {
+    return c.json({
+      message: "User not found!",
+      id: userId,
+    });
+  }
+  const username = response.username;
+  const email = response.email;
+  const name = response.name;
+  const bio = response.bio;
+  const profilePic = response.profile_pic;
+
+  return c.json(
+    {
+      message: "You are logged in!",
+      id: userId,
+      username: username,
+      email: email,
+      name: name,
+      bio: bio,
+      profilePic: profilePic,
+      blogs: response.blogs
+    },
+    { status: 200 }
+  );
 });
