@@ -1,10 +1,10 @@
-import { Blog, BlogManagementProps } from "../components/ui/BlogManagement";
+import { Blog } from "../components/ui/BlogManagement";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Spinner } from "../components/ui/Spinner";
 import { BlogManagement } from "../components/ui/BlogManagement";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import { Link } from "react-router-dom";
 
 export const Profile = () => {
   const [username, setUsername] = useState<string>("");
@@ -75,9 +75,15 @@ export const Profile = () => {
             <div className="flex flex-col items-center justify-center md:flex-row md:items-center md:justify-start gap-4">
               <div className="w-28 h-28 md:w-40 md:h-40 rounded-full flex items-center justify-center bg-green-500">
                 {profile ? (
-                  <img src={profile} alt="Profile" className="w-full h-full object-cover rounded-full" />
+                  <img
+                    src={profile}
+                    alt="Profile"
+                    className="w-full h-full object-cover rounded-full"
+                  />
                 ) : (
-                  <span className="text-5xl text-white">{name.charAt(0).toUpperCase()}</span>
+                  <span className="text-5xl text-white">
+                    {name.charAt(0).toUpperCase()}
+                  </span>
                 )}
               </div>
               <div className="flex flex-col items-center md:items-start">
@@ -109,7 +115,11 @@ export const Profile = () => {
               </div>
             ) : (
               <div className="flex flex-col gap-7">
-                <BlogManagement blogs={blogs} onUnpublish={handleUnpublish} onDelete={handleDelete} />
+                <BlogManagement
+                  blogs={blogs}
+                  onUnpublish={handleUnpublish}
+                  onDelete={handleDelete}
+                />
               </div>
             )}
           </div>
