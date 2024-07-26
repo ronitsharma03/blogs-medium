@@ -88,7 +88,7 @@ export const BlogCard = ({
             <div className="text-slate-800 text-lg flex items-start mt-1 text-justify">
               {content.length > 200 ? (
                 <div className="flex flex-col">
-                  <div>{content.slice(0, 340) + "..."}</div>
+                  <div dangerouslySetInnerHTML={{__html: content.slice(0, 340) + "..."}}/>
                   <div>
                     <Link to={`/blog/${id}`}>
                       <button className="font-light text-base p-1 text-white bg-black w-32 rounded-sm mt-4">

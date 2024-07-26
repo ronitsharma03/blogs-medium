@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import ReactQuill from "react-quill";
 
 export const Create = () => {
   const [clicked, setClicked] = useState<boolean>(false);
@@ -16,6 +17,10 @@ export const Create = () => {
   };
   const clearText = () => {
     setContent("");
+  };
+
+  const handleContentChange = (value: string) => {
+    setContent(value);
   };
 
   const publishBlog = async () => {
@@ -34,7 +39,7 @@ export const Create = () => {
         }
       );
 
-      toast.success("Blog published", {
+      toast.success(response.data.message, {
         id: "publish",
         duration: 1200,
       });
@@ -48,7 +53,7 @@ export const Create = () => {
     }
   };
   return (
-    <section className="w-full flex justify-center px-4 py-6">
+    <section className="w-full min-h-screen flex justify-center px-4 py-6">
       <div>
         <Toaster position="bottom-left" />
       </div>
@@ -85,7 +90,7 @@ export const Create = () => {
           />
         </div>
         <div>
-          <textarea
+          {/* <textarea
             className="ml-2 font-primaryRegular w-full border-none outline-none py-4 px-2 text-xl sm:text-lg lg:text-2xl resize-none "
             rows={20}
             placeholder="Tell your story..."
@@ -93,6 +98,13 @@ export const Create = () => {
               setContent(e.target.value);
             }}
             value={content}
+          /> */}
+
+          <ReactQuill
+            className="ml-2 font-primaryRegular w-full border-none outline-none py-4 px-2 text-xl sm:text-lg lg:text-2xl"
+            value={content}
+            theme="snow"
+            onChange={handleContentChange}
           />
         </div>
         <div>
