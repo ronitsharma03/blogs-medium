@@ -51,7 +51,7 @@ export const BlogCard = ({
 
   const CopyLink = () => {
     return (
-      <div className="absolute right-10 bottom-16 px-6 py-2 text-center flex items-center justify-center border rounded-lg p-2 bg-white shadow-md">
+      <div className="absolute right-10 bottom-10 px-6 py-2 text-center flex items-center justify-center border rounded-lg p-2 bg-white shadow-md">
         <button className="h-full w-full" onClick={copyToClipboard}>
           Copy
         </button>

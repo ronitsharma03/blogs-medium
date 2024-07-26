@@ -1,40 +1,59 @@
+import { Blog, BlogManagementProps } from "../components/ui/BlogManagement";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Spinner } from "../components/ui/Spinner";
+import { BlogManagement } from "../components/ui/BlogManagement";
+import { Link } from "react-router-dom"; // Import Link for navigation
 
 export const Profile = () => {
-  const [username, setusername] = useState("");
-  const [email, setEmail] = useState("");
-  const [name, setname] = useState("");
-  const [profile, setProfile] = useState<string | null>("");
-  const [bio, setBio] = useState<string | null>("");
-  const [loading, setloading] = useState<boolean>(true);
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [profile, setProfile] = useState<string | null>(null);
+  const [bio, setBio] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+
+  const handleUnpublish = (id: string) => {
+    // Implement unpublish logic here
+  };
+
+  const handleDelete = (id: string) => {
+    // Implement delete logic here
+  };
 
   const fetchProfile = async () => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/me`,
-      {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      }
-    );
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/me`,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
 
-    if (response.status != 200) {
-      toast.error(response.data.message, {
-        id: "profile",
-        duration: 2000,
-      });
-    } else {
-      setusername(response.data.username);
-      setEmail(response.data.email);
-      setBio(response.data.bio);
-      setProfile(response.data.profile);
-      setname(response.data.name);
-      setloading(false);
-      await new Promise((r) => setTimeout(r, 1000));
-      toast.success("Profile fetched successfully!", {
+      if (response.status !== 200) {
+        toast.error(response.data.message, {
+          id: "profile",
+          duration: 2000,
+        });
+      } else {
+        setUsername(response.data.username);
+        setEmail(response.data.email);
+        setBio(response.data.bio);
+        setProfile(response.data.profile);
+        setName(response.data.name);
+        setBlogs(response.data.blogs);
+        setLoading(false);
+        toast.success("Profile fetched successfully!", {
+          id: "profile",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      toast.error("Failed to fetch profile", {
         id: "profile",
         duration: 2000,
       });
@@ -46,53 +65,53 @@ export const Profile = () => {
   }, []);
 
   return (
-    <section className="h-screen w-full font-serif">
+    <section className="min-h-screen w-full font-serif">
       {loading ? (
         <Spinner />
       ) : (
-        <div className="w-full h-full flex justify-center mt-20">
-          <div>
-            <Toaster position="bottom-left" />
+        <div className="w-full h-full flex flex-col items-center mt-20 px-4 mb-10">
+          <Toaster position="bottom-left" />
+          <div className="flex flex-col max-w-5xl w-full md:flex-row gap-8 p-4 bg-white shadow-lg rounded-lg">
+            <div className="flex flex-col items-center justify-center md:flex-row md:items-center md:justify-start gap-4">
+              <div className="w-28 h-28 md:w-40 md:h-40 rounded-full flex items-center justify-center bg-green-500">
+                {profile ? (
+                  <img src={profile} alt="Profile" className="w-full h-full object-cover rounded-full" />
+                ) : (
+                  <span className="text-5xl text-white">{name.charAt(0).toUpperCase()}</span>
+                )}
+              </div>
+              <div className="flex flex-col items-center md:items-start">
+                <div className="text-3xl font-medium">{name}</div>
+                <div className="text-lg text-gray-600">@ {username}</div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center md:items-start">
+              <span className="text-4xl font-medium mb-2">About</span>
+              <div className="text-xl text-gray-600">{bio}</div>
+            </div>
           </div>
-          <div className="flex flex-col max-w-5xl max-md:items-center">
-            <div className="flex flex-row gap-16 max-md:flex-col max-md:items-center">
-              <div className="flex flex-col items-center justify-center max-md:flex-row max-md:items-center max-md:justify-center gap-4">
-                <div className="w-28 h-28 rounded-full flex items-center justify-center">
-                  {profile == null ? (
-                    <div
-                      className={`relative h-full w-full overflow-hidden bg-green-500 rounded-full flex items-center justify-center text-5xl text-white`}
-                    >
-                      {name.charAt(0).toUpperCase()}
-                      <div className="absolute left-0 top-0 h-full w-full rounded-full overflow-hidden bg-transparent z-10"></div>
-                    </div>
-                  ) : (
-                    <img src={profile} />
-                  )}
-                </div>
-                <div className="flex flex-col items-center justify-center">
-                  <div className="text-3xl mt-2 font-medium">{name}</div>
-                  <div className="text-lg mt-2">@ {username}</div>
-                </div>
-              </div>
-              <div className="flex flex-col items-left justify-center gap-3 max-md:max-w-lg">
-                <span className="text-4xl font-medium">About</span>
-                <div className="text-xl text-slate-500">{bio}</div>
-              </div>
-            </div>
 
-            <div className="flex flex-col mt-16 justify-center">
-              <div className="text-4xl font-medium mb-10">Blogs</div>
-              <div className="flex flex-col w-full md:flex-row gap-7 max-md:grid max-md:grid-cols-1">
-                {["blog1", "blog2", "blog3", "blog4"].map((item, index) => (
-                  <div
-                    className="max-md:w-full w-36 h-40 border border-black rounded-xl"
-                    key={index}
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+          <div className="flex flex-col mt-16 w-full max-w-5xl p-4 bg-white shadow-lg rounded-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-4xl font-medium">Blogs</div>
+              {blogs.length === 0 && (
+                <Link
+                  to="/create-blog" // Adjust the route as necessary
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                >
+                  Create New Blog
+                </Link>
+              )}
             </div>
+            {blogs.length === 0 ? (
+              <div className="text-xl text-gray-600 text-center">
+                Create your first blog
+              </div>
+            ) : (
+              <div className="flex flex-col gap-7">
+                <BlogManagement blogs={blogs} onUnpublish={handleUnpublish} onDelete={handleDelete} />
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 
 import { BlogCard } from "../components/ui/BlogCard";
-import { Spinner } from "../components/ui/Spinner";
+import { BlogSkeleton } from "../components/ui/BlogSkeleton";
 import { useBlogs } from "../hooks";
 
 
@@ -11,8 +11,12 @@ export const Home = () => {
     <section>
       
       {loading ? (
-        <div className="h-screen">
-          <Spinner />
+        <div className="min-h-screen flex flex-col items-center">
+          <BlogSkeleton />
+          <BlogSkeleton />
+          <BlogSkeleton />
+          <BlogSkeleton />
+          
         </div>
       ) : (
         <div className="flex justify-center">

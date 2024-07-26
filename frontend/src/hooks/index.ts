@@ -55,7 +55,6 @@ export const useGetBlog = (blogId: string) => {
           },
         }
       );
-      
       setBlogs(response.data.Blogs);
     } catch (e) {
       console.log("Error fetching blogs" + e);
