@@ -120,7 +120,8 @@ blogRouter.get("/allblogs", async (c) => {
             name: true
           }
         },
-        createdAt: true
+        createdAt: true,
+        imgageUrl: true
       }
     });
 
@@ -161,7 +162,8 @@ blogRouter.get("/:id", authMiddleware, async (c) => {
             name: true
           }
         },
-        createdAt: true
+        createdAt: true,
+        imgageUrl: true
       }
     });
 
