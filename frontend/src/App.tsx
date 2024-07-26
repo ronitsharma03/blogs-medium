@@ -11,6 +11,7 @@ import { RecoilRoot } from "recoil";
 import { ProtectedRoute } from "./components/ui/ProtectedRoute";
 import { Create } from "./pages/Create";
 
+
 const App = () => {
   return (
     <RecoilRoot>
@@ -34,7 +35,7 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path={"/blog/:id"} element={<Blog />} />
+            <Route path={"/blog/:id"} element={<section className="min-h-screen"><Blog /></section>} />
             <Route path={"/profile/:username"} element={<Profile />} />
             <Route path={"/home" || "/home/"} element={<Home />} />
             <Route path={"/write" || "/write/"} element={<Create />} />

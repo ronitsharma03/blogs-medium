@@ -3,7 +3,6 @@ import { Spinner } from "../components/ui/Spinner";
 import { Avatar } from "../components/ui/BlogCard";
 import toast, { Toaster } from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"
 
 
@@ -25,7 +24,7 @@ export const Blog = () => {
   }
 
   return (
-    <section>
+    <section className="min-h-screen w-full">
       {loading ? (
         <div className="h-screen">
           <Spinner />
@@ -33,9 +32,9 @@ export const Blog = () => {
       ) : (
         <div className="w-full min-h-screen flex justify-center mt-10">
           <div className="max-w-4xl p-5 h-full">
-            <div className="text-5xl font-extrabold mb-6 max-sm:text-3xl border-b pb-2">
-              {blogs.title}
-            </div>
+            <div className="text-4xl font-extrabold mb-6 max-sm:text-3xl border-b pb-2 break-words"
+            dangerouslySetInnerHTML={{__html:blogs.title}}
+            />
             <img
               src={
                 blogs.imageUrl ||

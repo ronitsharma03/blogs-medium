@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import ReactQuill from "react-quill";
+import { useNavigate } from "react-router-dom";
 
 export const Create = () => {
   const [clicked, setClicked] = useState<boolean>(false);
@@ -23,6 +24,8 @@ export const Create = () => {
     setContent(value);
   };
 
+  const navigate = useNavigate();
+
   const publishBlog = async () => {
     try {
       const response = await axios.post(
@@ -43,7 +46,7 @@ export const Create = () => {
         id: "publish",
         duration: 1200,
       });
-      return;
+      navigate("/home");
     } catch (e) {
       toast.error("Error publishing blog", {
         id: "publish",
@@ -90,16 +93,6 @@ export const Create = () => {
           />
         </div>
         <div>
-          {/* <textarea
-            className="ml-2 font-primaryRegular w-full border-none outline-none py-4 px-2 text-xl sm:text-lg lg:text-2xl resize-none "
-            rows={20}
-            placeholder="Tell your story..."
-            onChange={(e) => {
-              setContent(e.target.value);
-            }}
-            value={content}
-          /> */}
-
           <ReactQuill
             className="ml-2 font-primaryRegular w-full border-none outline-none py-4 px-2 text-xl sm:text-lg lg:text-2xl"
             value={content}

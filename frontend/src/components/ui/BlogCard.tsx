@@ -82,9 +82,10 @@ export const BlogCard = ({
           </div>
 
           <div className="max-w-xl max-md:w-full">
-            <div className="font-bold text-4xl mb-2">
-              {title.length > 100 ? title.slice(0, 100) + "..." : title}
-            </div>
+            <div className="font-bold text-4xl mb-2 break-words"
+            dangerouslySetInnerHTML={{__html: title.length > 100 ? title.slice(0, 100) + "..." : title}}
+            />
+             
             <div className="text-slate-800 text-lg flex items-start mt-1 text-justify">
               {content.length > 200 ? (
                 <div className="flex flex-col">
