@@ -67,7 +67,7 @@ export const SignupAuth = () => {
       });
       console.log("Signup successful");
       await new Promise(r => setTimeout(r, 1000));
-      navigate("/profile");
+      navigate("/home");
     } catch (error) {
       console.log(`Error Signing up ${error}`);
 

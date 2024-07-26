@@ -26,28 +26,32 @@ export const Create = () => {
           title: title,
           content: content,
           imageUrl: imageLink,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
         }
       );
-      if(response){
-        toast.success("Blog published", {
-            id:"publish",
-            duration: 1200
-        });
-        return;
-      }
+
+      toast.success("Blog published", {
+        id: "publish",
+        duration: 1200,
+      });
+      return;
     } catch (e) {
-        toast.error("Error publishing blog", {
-            id:"publish",
-            duration: 1200
-        });
-        return;
+      toast.error("Error publishing blog", {
+        id: "publish",
+        duration: 1200,
+      });
+      return;
     }
   };
   return (
     <section className="w-full flex justify-center px-4 py-6">
-        <div>
-            <Toaster position="bottom-left"/>
-        </div>
+      <div>
+        <Toaster position="bottom-left" />
+      </div>
       <div className="w-full max-w-4xl flex flex-col gap-6">
         <div className="relative flex flex-row items-center">
           {clicked ? (

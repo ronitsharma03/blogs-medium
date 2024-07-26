@@ -1,16 +1,15 @@
-import { BrowserRouter, Routes, Route, useLocation,  } from 'react-router-dom';
-import { Signin } from './pages/Signin';
-import { Signup } from './pages/Signup';
-import { Blog } from './pages/Blog';
-import { Profile } from './pages/Profile';
-import { Home } from './pages/Home';
-import Landing from './pages/Landing';
-import { Appbar } from './components/ui/Appbar';
-import Footer from './components/ui/Footer';
-import { RecoilRoot } from 'recoil';
-import { ProtectedRoute } from './components/ui/ProtectedRoute';
-import { Create } from './pages/Create';
-
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Signin } from "./pages/Signin";
+import { Signup } from "./pages/Signup";
+import { Blog } from "./pages/Blog";
+import { Profile } from "./pages/Profile";
+import { Home } from "./pages/Home";
+import Landing from "./pages/Landing";
+import { Appbar } from "./components/ui/Appbar";
+import Footer from "./components/ui/Footer";
+import { RecoilRoot } from "recoil";
+import { ProtectedRoute } from "./components/ui/ProtectedRoute";
+import { Create } from "./pages/Create";
 
 const App = () => {
   return (
@@ -35,8 +34,8 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path={"/blog/:id" || "/blog/:id/"} element={<Blog />} />
-            <Route path={"/profile/:username" || "/profile/:username/"} element={<Profile />} />
+            <Route path={"/blog/:id"} element={<Blog />} />
+            <Route path={"/profile/:username"} element={<Profile />} />
             <Route path={"/home" || "/home/"} element={<Home />} />
             <Route path={"/write" || "/write/"} element={<Create />} />
           </Routes>
@@ -48,8 +47,7 @@ const App = () => {
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const hideAppbarPaths = ['/', '/signup', '/signin'];
-
+  const hideAppbarPaths = ["/", "/signup", "/signin", "/profile/"];
 
   return (
     <>
@@ -59,7 +57,5 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     </>
   );
 };
-
-
 
 export default App;

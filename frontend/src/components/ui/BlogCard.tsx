@@ -8,7 +8,7 @@ export interface BlogCardProps {
   title: string;
   content: string;
   publishedDate: string;
-  imageLink: string;
+  imageUrl: string;
 }
 
 export const BlogCard = ({
@@ -17,7 +17,7 @@ export const BlogCard = ({
   title,
   content,
   publishedDate,
-  imageLink,
+  imageUrl,
 }: BlogCardProps) => {
   const generateShareLink = () => {
     const location = `${window.location.origin}/blog/${id}`;
@@ -75,17 +75,17 @@ export const BlogCard = ({
           <div>
             <img
               className="rounded-xl md:ml-4 mt-4 mb-8 max-md:max-w-[55%] max-w-[80%]"
-              src={
-                "https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg"
-              }
+              src={imageUrl}
               alt="Thumbnail"
             />
+            
           </div>
+
           <div className="max-w-xl max-md:w-full">
             <div className="font-bold text-4xl mb-2">
               {title.length > 100 ? title.slice(0, 100) + "..." : title}
             </div>
-            <div className="text-slate-800 text-lg flex items-start mt-1">
+            <div className="text-slate-800 text-lg flex items-start mt-1 text-justify">
               {content.length > 200 ? (
                 <div className="flex flex-col">
                   <div>{content.slice(0, 340) + "..."}</div>

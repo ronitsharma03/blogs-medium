@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IconWrite } from "./Icon";
 import { Avatar } from "./BlogCard";
 import { useState, useEffect, useRef } from "react";
@@ -8,11 +8,11 @@ import { nameSelector } from "../../store/selector";
 import { ProfileAtom } from "../../store/atom";
 import { Spinner } from "./Spinner";
 
-
 export const Appbar = () => {
   const [clicked, setClicked] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const location = useLocation(); // Get current location
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -61,6 +61,14 @@ export const Appbar = () => {
     };
   }, []);
 
+  // Define routes where the "Write" button should be hidden
+  const hiddenRoutes = ["/write", /^\/profile\/.+/];
+  const shouldHideWriteButton = hiddenRoutes.some((route) =>
+    typeof route === "string"
+      ? location.pathname === route
+      : route.test(location.pathname)
+  );
+
   return (
     <header className="px-10 lg:px-16 py-6 flex items-center border-b sticky top-0 left-0 bg-white mb-10 z-10 shadow-md">
       <a
@@ -87,28 +95,22 @@ export const Appbar = () => {
         </span>
       </a>
       <nav className="ml-auto flex gap-4 sm:gap-6">
-        {["write", "profile"].map((item, index) => (
+        {!shouldHideWriteButton && (
           <button
-            key={index}
-            onClick={() => {
-              if(item === "Profile"){
-                handleClick();
-                return;
-              }
-              navigate(`${item}`);
-            }}
+            onClick={() => navigate("/write")}
           >
-            {item === "write" ? (
-              <div className="flex items-center justify-center gap-1">
-                <IconWrite /> Write
-              </div>
-            ) : loading ? (
-              <Spinner />
-            ) : (
-              <Avatar name={loggedUser.fullname} />
-            )}
+            <div className="flex items-center justify-center gap-1">
+              <IconWrite /> Write
+            </div>
           </button>
-        ))}
+        )}
+        {loading ? (
+          <Spinner />
+        ) : (
+          <button onClick={handleClick}>
+            <Avatar name={loggedUser.fullname} />
+          </button>
+        )}
         {clicked && (
           <div className="absolute top-20 right-10" ref={dropdownRef}>
             <Logout handleLogout={logoutFn} handleProfile={profileFn} />
@@ -118,5 +120,3 @@ export const Appbar = () => {
     </header>
   );
 };
-
-

@@ -10,7 +10,7 @@ export interface Blogs {
     name: string;
   };
   createdAt: Date;
-  imageLink: string;
+  imageUrl: string;
 }
 
 export const useBlogs = () => {
@@ -22,6 +22,7 @@ export const useBlogs = () => {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/allblogs`
       );
+      console.log("res from hook", response.data.Blogs);
       setBlogs(response.data.Blogs);
     } catch (e) {
       console.log("Error fetching blogs" + e);
@@ -54,6 +55,7 @@ export const useGetBlog = (blogId: string) => {
           },
         }
       );
+      
       setBlogs(response.data.Blogs);
     } catch (e) {
       console.log("Error fetching blogs" + e);
@@ -66,6 +68,7 @@ export const useGetBlog = (blogId: string) => {
     fetchBlogs();
   }, []);
 
+  
   return {
     loading,
     blogs,
@@ -112,14 +115,13 @@ interface useBlogProps {
 
 export const useBlogPublish = ({ title, content, imagelink }: useBlogProps) => {
   const publish = async () => {
-    try{
-
+    try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/create`,
         {
           title: title,
           content: content,
-          imgageUrl: imagelink,
+          imageUrl: imagelink,
         },
         {
           headers: {
@@ -127,19 +129,19 @@ export const useBlogPublish = ({ title, content, imagelink }: useBlogProps) => {
           },
         }
       );
-      if(!response){
+      if (!response) {
         return false;
       }
       toast.success("Blog published", {
         id: "publish",
-        duration: 1000
+        duration: 1000,
       });
       return true;
-    }catch(e){
+    } catch (e) {
       console.log(`Error publishing blog ${e}`);
       toast.error("Something went wrong", {
         id: "publish",
-        duration: 1000
+        duration: 1000,
       });
     }
   };
