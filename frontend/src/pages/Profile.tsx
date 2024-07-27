@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 export const Profile = () => {
   const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  // const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [profile, setProfile] = useState<string | null>(null);
   const [bio, setBio] = useState<string | null>(null);
@@ -17,10 +17,12 @@ export const Profile = () => {
 
   const handleUnpublish = (id: string) => {
     // Implement unpublish logic here
+    console.log(id)
   };
 
   const handleDelete = (id: string) => {
     // Implement delete logic here
+    console.log(id)
   };
 
   const fetchProfile = async () => {
@@ -41,7 +43,7 @@ export const Profile = () => {
         });
       } else {
         setUsername(response.data.username);
-        setEmail(response.data.email);
+        // setEmail(response.data.email);
         setBio(response.data.bio);
         setProfile(response.data.profile);
         setName(response.data.name);
