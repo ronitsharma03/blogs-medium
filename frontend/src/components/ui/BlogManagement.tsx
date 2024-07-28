@@ -1,11 +1,4 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-export interface BlogManagementProps {
-  blog: Blog;
-  onUnpublish: (id: string) => void;
-  onDelete: (id: string) => void;
-}
 
 export interface Blog {
   id: string;
@@ -15,18 +8,13 @@ export interface Blog {
   published: boolean;
 }
 
+interface BlogManagementProps {
+  blog: Blog;
+  onUnpublish: (id: string) => void;
+  onDelete: (id: string) => void;
+}
+
 export const BlogManagement = ({ blog, onUnpublish, onDelete }: BlogManagementProps) => {
-  const [status, setStatus] = useState(blog.published);
-
-  useEffect(() => {
-    setStatus(blog.published);
-  }, [blog.published]);
-
-  const handleUnpublish = async () => {
-    await onUnpublish(blog.id);
-    setStatus((prevStatus) => !prevStatus); // Toggle status locally
-  };
-
   return (
     <div className="w-full max-w-2xl py-4 space-y-8">
       <div
@@ -59,12 +47,12 @@ export const BlogManagement = ({ blog, onUnpublish, onDelete }: BlogManagementPr
             View
           </Link>
           <button
-            onClick={handleUnpublish}
+            onClick={() => onUnpublish(blog.id)}
             className={`px-4 py-2 text-white rounded-md transition ${
-              status ? "bg-gray-500 hover:bg-gray-600" : "bg-blue-500 hover:bg-blue-600"
+              blog.published ? "bg-gray-500 hover:bg-gray-600" : "bg-blue-500 hover:bg-blue-600"
             }`}
           >
-            {status ? "Unpublish" : "Publish"}
+            {blog.published ? "Unpublish" : "Publish"}
           </button>
           <button
             onClick={() => onDelete(blog.id)}

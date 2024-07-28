@@ -1,9 +1,8 @@
-import { Blog } from "../components/ui/BlogManagement";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Spinner } from "../components/ui/Spinner";
-import { BlogManagement } from "../components/ui/BlogManagement";
+import { Blog, BlogManagement } from "../components/ui/BlogManagement";
 import { Link } from "react-router-dom";
 
 export const Profile = () => {
@@ -17,7 +16,6 @@ export const Profile = () => {
 
   const handleUnpublish = async (id: string) => {
     try {
-
       const response = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/toggle/${id}`,
         {},
@@ -29,21 +27,17 @@ export const Profile = () => {
       );
 
       if (response.data) {
-        toast.success(response.data.state, {
-          id: "toggle",
-          duration: 1000,
-        });
+        setBlogs((prevBlogs) =>
+          prevBlogs.map((blog) =>
+            blog.id === id ? { ...blog, published: !blog.published } : blog
+          )
+        );
+        toast.success(`Blog ${response.data.state.toLowerCase()} successfully!`);
       } else {
-        toast.error(`Failed to ${response.data.state} blog`, {
-          id: "toggle",
-          duration: 1000,
-        });
+        toast.error("Failed to update blog status.");
       }
-    } catch (e) {
-      toast.error("Error toggling blog status", {
-        id: "toggle",
-        duration: 1000,
-      });
+    } catch (error) {
+      toast.error("Error toggling blog status.");
     }
   };
 
@@ -51,7 +45,6 @@ export const Profile = () => {
     try {
       toast.loading("Deleting blog...", {
         id: "delete",
-        duration: 1000,
       });
 
       const response = await axios.delete(
@@ -64,15 +57,14 @@ export const Profile = () => {
       );
 
       if (response.data) {
+        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
         toast.success(response.data.message, {
           id: "delete",
-          duration: 1000,
         });
       }
     } catch (e) {
       toast.error("Error deleting the blog!", {
         id: "delete",
-        duration: 1000,
       });
     }
   };
@@ -97,18 +89,15 @@ export const Profile = () => {
         setLoading(false);
         toast.success("Profile fetched successfully!", {
           id: "profile",
-          duration: 2000,
         });
       } else {
         toast.error(response.data.message, {
           id: "profile",
-          duration: 2000,
         });
       }
     } catch (error) {
       toast.error("Failed to fetch profile", {
         id: "profile",
-        duration: 2000,
       });
     }
   };
@@ -117,15 +106,10 @@ export const Profile = () => {
     fetchProfile();
   }, []);
 
-  const handleEdit = () => {
-    setEdit(!isedit);
-  };
-
   const submitBio = async () => {
     if (bio.length < 30) {
       toast.error("Add more ", {
         id: "bio",
-        duration: 1000
       });
     } else {
       try {
@@ -143,18 +127,15 @@ export const Profile = () => {
         if (!response) {
           toast.error("Error updating bio", {
             id: "bio",
-            duration: 1000,
           });
         } else {
           toast.success(response.data.message, {
             id: "bio",
-            duration: 1000,
           });
         }
       } catch (e) {
         toast.error("Error updating bio", {
           id: "bio",
-          duration: 1000,
         });
       }
     }
@@ -168,6 +149,7 @@ export const Profile = () => {
         <div className="w-3/4 max-lg:w-full h-full flex flex-col items-center mt-20 max-md:mt-0 px-4 mb-10">
           <Toaster position="bottom-left" />
           <div className="flex flex-col md:flex-row w-full gap-8 p-4 bg-white shadow-lg rounded-lg animate-fadeIn">
+            {/* Profile Section */}
             <div className="flex flex-col items-center gap-4 animate-slideIn">
               <div className="w-28 h-28 lg:w-32 lg:h-32 rounded-full flex items-center justify-center bg-green-500 overflow-hidden">
                 {profile ? (
@@ -187,6 +169,7 @@ export const Profile = () => {
                 <div className="text-lg text-gray-600">@{username}</div>
               </div>
             </div>
+            {/* Bio Section */}
             <div className="flex flex-col ml-20 max-md:ml-0 items-start mt-4 w-full">
               <div className="text-4xl font-medium mb-2 flex flex-col items-start px-4">
                 <span className="mb-2">About</span>{" "}
@@ -194,7 +177,7 @@ export const Profile = () => {
                   className={`text-sm font-sans text-slate-600 ${
                     !isedit ? "visible" : "hidden"
                   }`}
-                  onClick={handleEdit}
+                  onClick={() => setEdit(true)}
                 >
                   Edit
                 </button>
@@ -205,16 +188,14 @@ export const Profile = () => {
                     rows={5}
                     cols={150}
                     className="text-justify w-full h-full resize-none border font-sans p-2"
-                    onChange={(e) => {
-                      setBio(e.target.value);
-                    }}
+                    onChange={(e) => setBio(e.target.value)}
                     value={bio}
                   ></textarea>
                   <button
                     className="bg-blue-500 text-white w-20 h-8 rounded-md"
-                    onClick={() => {
-                      handleEdit();
-                      submitBio();
+                    onClick={async () => {
+                      setEdit(false);
+                      await submitBio();
                     }}
                   >
                     Save
@@ -230,7 +211,7 @@ export const Profile = () => {
               )}
             </div>
           </div>
-
+          {/* Blogs Section */}
           <div className="flex flex-col mt-16 w-full p-6 bg-white shadow-lg rounded-lg animate-fadeIn">
             <div className="flex  items-center justify-between mb-4w-full">
               <div className="text-4xl font-medium max-md:mb-10">Blogs</div>
@@ -241,14 +222,12 @@ export const Profile = () => {
                   Create your first blog
                 </div>
                 <div className="">
-                  {blogs.length === 0 && (
-                    <Link
-                      to="/write"
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-                    >
-                      Create New Blog
-                    </Link>
-                  )}
+                  <Link
+                    to="/write"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                  >
+                    Create New Blog
+                  </Link>
                 </div>
               </div>
             ) : (
