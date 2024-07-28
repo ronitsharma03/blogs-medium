@@ -131,36 +131,41 @@ export const Profile = () => {
   };
 
   const submitBio = async () => {
-    try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/update`,
-        {
-          bio: bio,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        }
-      );
-      if(!response)
-      {
-        toast.error("Error updating bio", {
-          id: "bio",
-          duration: 1000
-        });
-      }else{
-        toast.success(response.data.message, {
-          id: "bio",
-          duration: 1000
-        });
-      }
-    } catch (e) {
-      toast.error("Error updating bio", {
+    if (bio.length < 30) {
+      toast.error("Add more ", {
         id: "bio",
         duration: 1000
       });
-
+    } else {
+      try {
+        const response = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/update`,
+          {
+            bio: bio,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        if (!response) {
+          toast.error("Error updating bio", {
+            id: "bio",
+            duration: 1000,
+          });
+        } else {
+          toast.success(response.data.message, {
+            id: "bio",
+            duration: 1000,
+          });
+        }
+      } catch (e) {
+        toast.error("Error updating bio", {
+          id: "bio",
+          duration: 1000,
+        });
+      }
     }
   };
 

@@ -38,7 +38,7 @@ export const Home = () => {
   }, []);
 
   return (
-    <section>
+    <section className="min-h-screen">
       {loader ? (
         <div className="min-h-screen flex flex-col items-center">
           <BlogSkeleton />
