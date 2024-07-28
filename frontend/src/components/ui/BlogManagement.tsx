@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom"; // Assuming you're using React Router for navigation
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export interface BlogManagementProps {
   blog: Blog;
   onUnpublish: (id: string) => void;
   onDelete: (id: string) => void;
-  publish: boolean;
 }
 
 export interface Blog {
@@ -15,12 +15,18 @@ export interface Blog {
   published: boolean;
 }
 
-export const BlogManagement = ({
-  blog,
-  onUnpublish,
-  onDelete,
-  publish,
-}: BlogManagementProps) => {
+export const BlogManagement = ({ blog, onUnpublish, onDelete }: BlogManagementProps) => {
+  const [status, setStatus] = useState(blog.published);
+
+  useEffect(() => {
+    setStatus(blog.published);
+  }, [blog.published]);
+
+  const handleUnpublish = async () => {
+    await onUnpublish(blog.id);
+    setStatus((prevStatus) => !prevStatus); // Toggle status locally
+  };
+
   return (
     <div className="w-full max-w-2xl py-4 space-y-8">
       <div
@@ -39,9 +45,7 @@ export const BlogManagement = ({
             overflow: "hidden",
             textOverflow: "ellipsis",
           }}
-          dangerouslySetInnerHTML={{
-            __html: blog.content,
-          }}
+          dangerouslySetInnerHTML={{ __html: blog.content }}
         />
         <div className="text-sm text-gray-500">
           Published on: {new Date(blog.createdAt).toLocaleDateString()} |{" "}
@@ -49,20 +53,18 @@ export const BlogManagement = ({
         </div>
         <div className="flex gap-2 flex-wrap">
           <Link
-            to={`/blog/${blog.id}`} // Adjust the route as necessary
+            to={`/blog/${blog.id}`}
             className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md transition"
           >
             View
           </Link>
           <button
-            onClick={async () => await onUnpublish(blog.id)}
+            onClick={handleUnpublish}
             className={`px-4 py-2 text-white rounded-md transition ${
-              publish
-                ? "bg-gray-500 hover:bg-gray-600"
-                : "bg-blue-500 hover:bg-blue-600"
+              status ? "bg-gray-500 hover:bg-gray-600" : "bg-blue-500 hover:bg-blue-600"
             }`}
           >
-            {publish ? "Unpublish" : "Publish"}
+            {status ? "Unpublish" : "Publish"}
           </button>
           <button
             onClick={() => onDelete(blog.id)}

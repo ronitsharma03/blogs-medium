@@ -17,13 +17,6 @@ export const Profile = () => {
 
   const handleUnpublish = async (id: string) => {
     try {
-      const blog = blogs.find((b) => b.id === id);
-      const action = blog?.published ? "Unpublishing" : "Publishing";
-
-      toast.loading(`${action} blog...`, {
-        id: "toggle",
-        duration: 1000,
-      });
 
       const response = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/toggle/${id}`,
@@ -36,13 +29,12 @@ export const Profile = () => {
       );
 
       if (response.data) {
-        fetchProfile();
         toast.success(response.data.state, {
           id: "toggle",
           duration: 1000,
         });
       } else {
-        toast.error(`Failed to ${action.toLowerCase()} blog`, {
+        toast.error(`Failed to ${response.data.state} blog`, {
           id: "toggle",
           duration: 1000,
         });
@@ -72,7 +64,6 @@ export const Profile = () => {
       );
 
       if (response.data) {
-        fetchProfile();
         toast.success(response.data.message, {
           id: "delete",
           duration: 1000,
@@ -269,7 +260,6 @@ export const Profile = () => {
                       blog={blog}
                       onUnpublish={handleUnpublish}
                       onDelete={handleDelete}
-                      publish={blog.published}
                     />
                   ))}
                 </div>

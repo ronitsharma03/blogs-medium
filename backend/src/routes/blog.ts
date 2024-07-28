@@ -175,7 +175,8 @@ blogRouter.patch("/toggle/:id", authMiddleware, async (c) => {
     const state = response.published ? "published": "unpublished";
     return c.json({
       message: `Blog ${state} successfully!`,
-      status: response.published
+      status: response.published,
+      state: state
     });
   }catch(e){
     console.log(`Error updating the blog ${e}`);
