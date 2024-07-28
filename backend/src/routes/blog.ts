@@ -96,7 +96,7 @@ blogRouter.put("/update", authMiddleware, async (c) => {
       {
         message: "Error updating the Blog, try again!",
       },
-      { status: 403 }
+      { status: 500 }
     );
   }
 });
@@ -135,8 +135,92 @@ blogRouter.get("/allblogs", async (c) => {
       {
         message: "No blogs found!",
       },
-      { status: 403 }
+      { status: 500 }
     );
+  }
+});
+
+blogRouter.patch("/toggle/:id", authMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL
+  }).$extends(withAccelerate());
+
+  try{
+    const id = await c.req.param("id");
+    const userId = await c.get("userId");
+    const blogs = await prisma.blog.findFirst({
+      where: {
+        AND: [
+          {id: id},
+          {authorId: userId}
+        ]
+      }
+    });
+
+    if(!blogs){
+      return c.json({
+        message: "Error finding Blog",
+      }, {status: 404});
+    }
+
+    const response = await prisma.blog.update({
+      where: {
+        id: id
+      },
+      data: {
+        published: !blogs.published
+      }
+    });
+
+    const state = response.published ? "published": "unpublished";
+    return c.json({
+      message: `Blog ${state} successfully!`,
+      status: response.published
+    });
+  }catch(e){
+    console.log(`Error updating the blog ${e}`);
+    return c.json({
+      message: "Error updating the blog"
+    }, {status: 500});
+  }
+});
+
+blogRouter.delete("/delete/:id", authMiddleware, async (c) => {
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL
+  }).$extends(withAccelerate());
+
+  try{
+    const userId = await c.get("userId");
+    const id: string = await c.req.param("id");
+    const blog = await prisma.blog.findFirst({
+      where: {
+        id: id,
+        authorId: userId,
+      },
+    });
+    
+    if (blog) {
+      await prisma.blog.delete({
+        where: { id: blog.id },
+      });
+
+      return c.json({
+        message: "Blog deleted successfully"
+      });
+    }
+
+    if(!blog){
+      return c.json({
+        message: "Blog not found!"
+      }, {status: 404});
+    }
+
+  }catch(e){
+    return c.json({
+      message: "Something wrong happened"
+    }, {status: 500});
   }
 });
 

@@ -178,3 +178,44 @@ userRouter.get("/me", authMiddleware, async (c) => {
     { status: 200 }
   );
 });
+
+userRouter.put("/update", authMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try{
+    const {bio} = await c.req.json();
+    const userId = c.get("userId");
+
+    if (typeof bio !== 'string' || bio.trim() === '') {
+      return c.json({
+        message: "Invalid bio format"
+      }, { status: 400 });
+    }
+    
+    const response = await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        bio: bio
+      }
+    });
+
+    if(!response){
+      return c.json({
+        message: "Error updating bio"
+      }, {status: 404});
+    }
+
+    return c.json({
+      message: "Bio updated successfully"
+    });
+
+  }catch(e){
+    return c.json({
+      message: "Error updating bio"
+    }, {status: 500});
+  }
+});
