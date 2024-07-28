@@ -1,10 +1,12 @@
-
+import { Link } from "react-router-dom"; // Assuming you're using React Router for navigation
 
 export interface BlogManagementProps {
-  blogs: Blog[];
+  blog: Blog;
   onUnpublish: (id: string) => void;
   onDelete: (id: string) => void;
+  publish: boolean;
 }
+
 export interface Blog {
   id: string;
   title: string;
@@ -13,35 +15,63 @@ export interface Blog {
   published: boolean;
 }
 
-export const BlogManagement = ({ blogs, onUnpublish, onDelete }: BlogManagementProps) => {
+export const BlogManagement = ({
+  blog,
+  onUnpublish,
+  onDelete,
+  publish,
+}: BlogManagementProps) => {
   return (
-    <div className="max-w-4xl mx-auto py-8">
-      {blogs.map((blog) => (
-        <div key={blog.id} className="border-b pb-4 mb-4">
-          <h2 className="text-2xl font-bold">{blog.title}</h2>
-          <p className="text-gray-600 mb-2">
-            {blog.content.length > 100 ? blog.content.slice(0, 100) + "..." : blog.content}
-          </p>
-          <div className="text-sm text-gray-500 mb-2">
-            Published on: {new Date(blog.createdAt).toLocaleDateString()} | {Math.ceil(blog.content.length / 200)} min read
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => onUnpublish(blog.id)}
-              className={`px-4 py-2 text-white ${blog.published ? "bg-blue-500" : "bg-gray-500"} rounded-md`}
-              disabled={!blog.published}
-            >
-              Unpublish
-            </button>
-            <button
-              onClick={() => onDelete(blog.id)}
-              className="px-4 py-2 text-white bg-red-500 rounded-md"
-            >
-              Delete
-            </button>
-          </div>
+    <div className="w-full max-w-2xl py-4 space-y-8">
+      <div
+        key={blog.id}
+        className="border rounded-lg shadow-md p-4 transition hover:shadow-lg w-full h-full flex flex-col justify-between space-y-4 md:space-y-0 md:h-72"
+      >
+        <h2 className="text-2xl font-semibold text-gray-800">{blog.title}</h2>
+        <div
+          className="text-gray-700 overflow-hidden"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            whiteSpace: "pre-wrap",
+            wordWrap: "break-word",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          dangerouslySetInnerHTML={{
+            __html: blog.content,
+          }}
+        />
+        <div className="text-sm text-gray-500">
+          Published on: {new Date(blog.createdAt).toLocaleDateString()} |{" "}
+          {Math.ceil(blog.content.length / 1000)} min read
         </div>
-      ))}
+        <div className="flex gap-2 flex-wrap">
+          <Link
+            to={`/blog/${blog.id}`} // Adjust the route as necessary
+            className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md transition"
+          >
+            View
+          </Link>
+          <button
+            onClick={async () => await onUnpublish(blog.id)}
+            className={`px-4 py-2 text-white rounded-md transition ${
+              publish
+                ? "bg-gray-500 hover:bg-gray-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            {publish ? "Unpublish" : "Publish"}
+          </button>
+          <button
+            onClick={() => onDelete(blog.id)}
+            className="px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-md transition"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
