@@ -10,7 +10,7 @@ export interface Blogs {
     name: string;
   };
   createdAt: Date;
-  imageUrl: string;
+  imgageUrl: string;
 }
 
 export const useBlogs = () => {

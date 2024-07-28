@@ -12,7 +12,7 @@ interface Vlog{
     name: string;
   },
   id: string;
-  imageUrl: string;
+  imgageUrl: string;
 }
 export const Home = () => {
   // const { loading, blogs } = useBlogs();
@@ -26,7 +26,7 @@ export const Home = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/allblogs`
         );
-        console.log("res from hook", response.data.Blogs);
+        // console.log("res from hook", response.data.Blogs);
         setVlogs(response.data.Blogs);
       } catch (e) {
         console.log("Error fetching blogs" + e);
@@ -64,8 +64,7 @@ export const Home = () => {
                   content={blog.content}
                   publishedDate={date}
                   imageUrl={
-                    blog.imageUrl 
-                    // "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    blog.imgageUrl 
                   }
                 />
               );
