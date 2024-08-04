@@ -10,7 +10,8 @@ import Footer from "./components/ui/Footer";
 import { RecoilRoot } from "recoil";
 import { ProtectedRoute } from "./components/ui/ProtectedRoute";
 import { Create } from "./pages/Create";
-
+import { Suspense } from "react";
+import { Spinner } from "./components/ui/Spinner";
 
 const App = () => {
   return (
@@ -35,10 +36,32 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path={"/blog/:id"} element={<section className="min-h-screen"><Blog /></section>} />
+            <Route
+              path={"/blog/:id"}
+              element={
+                <section className="min-h-screen">
+                  <Blog />
+                </section>
+              }
+            />
             <Route path={"/profile/:username"} element={<Profile />} />
-            <Route path={"/home" || "/home/"} element={<Home />} />
-            <Route path={"/write" || "/write/"} element={<Create />} />
+
+            <Route
+              path={"/home"}
+              element={
+                <Suspense
+                  fallback={
+                    <div className="min-h-screen">
+                      <Spinner />
+                    </div>
+                  }
+                >
+                  <Home />
+                </Suspense>
+              }
+            />
+
+            <Route path={"/write"} element={<Create />} />
           </Routes>
         </Layout>
       </BrowserRouter>
