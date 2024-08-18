@@ -169,7 +169,7 @@ export const Create = () => {
             value={imageLink}
             placeholder="Add a image link for thumbnail"
             type="text"
-            className="ml-2 font-primaryRegular w-full px-2 text-lg sm:text-md lg:text-xl outline-none "
+            className=" hidden ml-2 font-primaryRegular w-full px-2 text-lg sm:text-md lg:text-xl outline-none "
           />
           <div className="overflow-hidden max-w-[300px] max-h-[300px]">
             {image && (
