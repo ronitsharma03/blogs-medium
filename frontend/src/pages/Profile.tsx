@@ -185,7 +185,7 @@ export const Profile = () => {
               {isedit ? (
                 <div>
                   <textarea
-                    rows={5}
+                    rows={3}
                     cols={150}
                     className="text-justify w-full h-full resize-none border font-sans p-2"
                     onChange={(e) => setBio(e.target.value)}
