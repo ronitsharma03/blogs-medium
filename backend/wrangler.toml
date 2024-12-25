@@ -1,6 +1,9 @@
 name = "backend"
 compatibility_date = "2023-12-01"
 
+# wrangler.toml (wrangler v3.88.0^)
+[observability.logs]
+enabled = true
 
 [vars]
 DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMWJiY2VkNDQtNTYyMS00ZDE0LTg3YjAtOTA1NWMwMDNlMThhIiwidGVuYW50X2lkIjoiNWQ3ZDZiMWI2OGNjYjk5YmFjYjYxMDdkN2NkMzM3MzkwNDcwMmVhYTA3YjFkZWUyZmQ3NDgzNzhiMzRjYWUyZCIsImludGVybmFsX3NlY3JldCI6ImM3YjhkNDM3LTRiZjgtNGM4Ni04NzcxLWU0NTMwMTRiOWQ4NCJ9.DNjuUxX513ZwQNapyXRyJDG-mO57FS_XovfCe-Ww7do"
